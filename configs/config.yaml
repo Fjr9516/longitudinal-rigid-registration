@@ -1,0 +1,51 @@
+setup:
+  xla: yes
+
+train:
+  data:
+    - data/new/3d_train/labels*/fsm/*
+  same_subj: yes
+  # From fs_left_right_cerebellum.pickle change to fs_cort_sub_left_right_cerebellum.pickle 5lb after training for 10000 eps
+  out_labels: configs/fs_left_right_cerebellum.pickle
+  loss: MSE
+  half_res: yes
+  loss_half_res: yes
+  loss_mid_space: yes
+  lr: 1e-5
+  run_name: rigid_reg
+  save_name: models/{run_name}/{{epoch:05d}}.h5
+  save_freq: 1
+  steps_per_epoch: 100
+  epochs: 1
+
+eval:
+  data:
+    - data/eval/oasis3_brainmask_aseg.csv
+    - data/eval/oasis3_orig_aseg.csv
+  save_name: output/longr2_on_oasis3.csv
+  labels: data/fs_cort_sub_left_right_cerebellum.pickle
+  run_name: rigid_reg
+  weights: models/{run_name}/130000.h5
+  make_dense: yes
+  bidir: yes
+  out_fig: output/moved/
+
+model:
+  name: VxmAffineFeatureDetector
+  enc_nf: [32, 64, 128, 256, 512, 1024]
+  dec_nf: [512, 256, 128, 64]
+  num_feat: 256
+  rigid: yes
+
+synthesis:
+  out_shape: [192, 192, 192]
+  aff_shift: 30
+  aff_rotate: 45
+  aff_scale: 0
+  aff_shear: 0
+  crop_prob: 1
+  blur_max: 3.4
+  slice_prob: 1
+  warp_max: 0.5
+  warp_blur_min: [1, 1]
+  warp_blur_max: [4, 4]

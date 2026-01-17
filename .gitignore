@@ -1,0 +1,83 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+*.dylib
+
+# Distribution / packaging
+build/
+dist/
+*.egg-info/
+.eggs/
+pip-wheel-metadata/
+
+# Virtual environments
+.env
+.venv/
+venv/
+env/
+ENV/
+env.bak/
+
+# Python testing
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Mypy
+.mypy_cache/
+
+# Jupyter Notebook
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+
+# IDEs and editors
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs, outputs, models, data
+logs/
+logs/*
+models/
+models/*
+outputs/
+outputs/*
+output/
+output/*
+data/
+data/*
+tmp_dir/
+containers/
+containers/*
+
+# Large or binary model/weights files
+*.h5
+*.ckpt
+*.pt
+*.pth
+
+# Local config
+.local/
+.envrc
+
+# Temporary files
+*.log
+*.tmp
+*~
+
+# Ignore build artifacts from C/C++ (if any)
+*.o
+*.obj
+*.so
+
+# Other
+tmp_scripts.py

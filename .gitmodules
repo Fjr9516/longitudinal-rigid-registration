@@ -1,0 +1,12 @@
+[submodule "pystrum"]
+	path = pystrum
+	url = https://github.com/Fjr9516/pystrum.git
+[submodule "ext/pystrum"]
+	path = ext/pystrum
+	url = https://github.com/Fjr9516/pystrum.git
+[submodule "ext/neurite"]
+	path = ext/neurite
+	url = https://github.com/Fjr9516/neurite.git
+[submodule "ext/voxelmorph"]
+	path = ext/voxelmorph
+	url = https://github.com/Fjr9516/voxelmorph.git
