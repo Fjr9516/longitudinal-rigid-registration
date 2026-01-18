@@ -99,8 +99,6 @@ If you use LongR² in your work, please cite the following paper:
 ```
 
 ## Acknowledgements:
-This repository builds upon ideas and tools from [SynthMorph](https://martinos.org/malte/synthmorph/). 
+This repository builds upon ideas and tools from [SynthMorph](https://martinos.org/malte/synthmorph/).
 
-## TODO
-- Upload weights, containers and maybe example data, csv file.
 
