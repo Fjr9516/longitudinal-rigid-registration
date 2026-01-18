@@ -31,7 +31,7 @@ class VxmAffineFeatureDetector(tf.keras.Model):
                  num_feat=64,
                  enc_nf=[256] * 4,
                  dec_nf=[256] * 0,
-                 add_nf=[256] * 0, # JR
+                 add_nf=[256] * 0,
                  per_level=1,
                  dropout=0,
                  half_res=True,
@@ -145,13 +145,13 @@ class VxmAffineFeatureDetector(tf.keras.Model):
             enc.append(out)
             out = pool(dtype=tf.float32)(out)
 
-        # JR: Recover last layer.
+        # Recover last layer.
         if dec_nf:
             out = enc.pop()
 
         # Decoder.
         for n in dec_nf:
-            out = KL.concatenate([up()(out), enc.pop()]) # JR: concate firstly
+            out = KL.concatenate([up()(out), enc.pop()]) # concate firstly
             for _ in range(per_level):
                 out = conv(n, **prop)(out)
                 out = drop(dropout)(out)

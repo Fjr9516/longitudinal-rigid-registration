@@ -27,15 +27,22 @@ import modules.networks as networks
 from modules.utils import load_config
 
 
-def save_moved_image(pair, pair_path, save_dir, dataset, pair_id):
-    """Save the moved image as a NIfTI file using the original affine."""
+def save_outputs(pair, pair_path, save_dir, dataset, pair_id):
+    """Save the moved image as a NIfTI file, 
+       and save transformation matrices as a LTA file.
+    """
     os.makedirs(save_dir, exist_ok=True)
-    image_moved = pair["image_moved"].numpy().squeeze()
+    image_moved = pair['image_moved'].numpy().squeeze()
     # Load affine from the fixed image file
-    _, affine_fix = vxm.py.utils.load_volfile(pair_path["image_fixed"], ret_affine=True)
+    _, affine_fix = vxm.py.utils.load_volfile(pair_path['image_fixed'], ret_affine=True)
     out_path = f'{save_dir}/{dataset}_{pair_id}.nii.gz'
     vxm.py.utils.save_volfile(image_moved, out_path, affine_fix)
 
+    # Get transform from moving to fixed image. FreeSurfer LTAs store the inverse.
+    trans = sf.Affine(tf.concat([tf.squeeze(pair['inv']), tf.constant([[0, 0, 0, 1]], dtype=tf.float32)], axis=0).numpy(), 
+                                 source=sf.load_volume(pair_path['image_moving']), target=sf.load_volume(pair_path['image_fixed']), space='vox')
+    out_name = f'{save_dir}/{dataset}_{pair_id}.lta'
+    trans.save(out_name)
 
 @tf.function
 def _dice(x, y, num_label):
@@ -217,9 +224,9 @@ def eval(config, section):
             out['dataset'].append(dat)
             out['pair'].append(f'{k:04d}')
 
-            # Save moved images if out_fig is provided
+            # Save moved images and transformation matrices if out_fig is provided
             if out_fig is not None:
-                save_moved_image(pair, pair_path, out_fig, dat, f'{k:04d}')
+                save_outputs(pair, pair_path, out_fig, dat, f'{k:04d}')
         
         print(f"Finished dataset {dat}.")
 

@@ -52,7 +52,7 @@ Ensure all required data paths and configuration options are correctly set in yo
 ### Reference / Evaluation
 
 1. **Prepare config**
-    - Edit `configs/config.yaml` and set the `eval` section fields: `data` (CSV(s)), `weights` (path template), `run_name`, `labels` (LUT), `save_name`, and optional `out_fig` to save moved images.
+    - Edit `configs/config.yaml` and set the `eval` section fields: `data` (CSV(s)), `weights` (path template), `run_name`, `labels` (LUT), `save_name`, and optional `out_fig` to save moved images and transform lta files.
 
 2. **Run evaluation**
     - From the repository root run (containerized):
@@ -63,7 +63,18 @@ Ensure all required data paths and configuration options are correctly set in yo
 
 3. **Outputs**
     - Results CSV is written as `save_name`.
-    - If `out_fig` is set, moved images are saved in that directory.
+    - If `out_fig` is set, moved images and transform lta files are saved in that directory.
+
+  **Freesurfer users:** you can apply a saved `.lta` transform to a moving volume with `mri_convert`. Example:
+
+  ```bash
+  mri_convert /path/to/moving.mgz \
+    -at /path/to/transform.lta \
+    /path/to/out_moved.nii.gz \
+    -rt cubic
+  ```
+
+  Use `-rt nearest` when saving label maps (to preserve integer labels).
 
 4. **Benchmark**
   - Performance note: on a Quadro RTX 6000, with input volumes of size 256×256×256, a single registration takes approximately ~2 seconds (measured end-to-end for model inference and resampling).
@@ -91,4 +102,5 @@ This repository builds upon ideas and tools from [SynthMorph](https://martinos.o
 ## TODO
 - Add instance-specific optimization
 - Add a figure
+- Upload weights, containers and maybe example data, csv file.
 
