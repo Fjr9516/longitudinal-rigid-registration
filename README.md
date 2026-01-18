@@ -28,6 +28,7 @@ The model is trained in an [anatomy-aware and acquisition-agnostic](https://arxi
 1. **Environment Setup**
    - Ensure Apptainer (or Singularity) is installed for containerized training.
    - Prepare your configuration file (e.g., `configs/config.yaml`) and training data as described in the paper and repository.
+  - If you want to follow the containerized instructions exactly, download the Singularity/Apptainer image `tensorflow_2.14.0-gpu.sif` from the release assets and place it at `/containers/tensorflow_2.14.0-gpu.sif`. Otherwise, set up your own environment and Python packages as you prefer.
 
 2. **Run Training**
    - Navigate to the main repository directory:
@@ -55,6 +56,7 @@ Ensure all required data paths and configuration options are correctly set in yo
 
 1. **Prepare config**
     - Edit `configs/config.yaml` and set the `eval` section fields: `data` (CSV(s)), `weights` (path template), `run_name`, `labels` (LUT), `save_name`, and optional `out_fig` to save moved images and transform lta files.
+  - Pretrained model weights and example evaluation CSV files are available from the project [release](https://github.com/Fjr9516/longitudinal-rigid-registration/releases/tag/v1.0.0). Download the pretrained `.h5` into `models/rigid_reg/` and example CSVs into `data/eval/` (or update your config paths accordingly).
 
 2. **Run evaluation**
     - From the repository root run (containerized):
@@ -62,6 +64,7 @@ Ensure all required data paths and configuration options are correctly set in yo
       ```bash
       ./setup/run_in_apptainer.sh python -m modules.eval
       ```
+  If you followed the containerized setup exactly, ensure the SIF is placed at `/containers/tensorflow_2.14.0-gpu.sif` before running the above command.
 
 3. **Outputs**
     - Results CSV is written as `save_name`.
