@@ -1,6 +1,6 @@
 # LongR²: Longitudinal Rigid Registration for Brain MRI
 
-![Representative within-subject registration pairs](./figs/example.png)
+![Representative within-subject registration pairs](./assets/example.png)
 
 Representative within-subject registration pairs. Each row shows a fixed image overlaid with the image moved by each method; we additionally overlay the absolute difference between fixed and moved brain masks in yellow. BrainMorph (BM) and SynthMorph (SM) use deep learning.
 
