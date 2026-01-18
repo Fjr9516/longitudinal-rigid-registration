@@ -29,6 +29,11 @@ eval:
   make_dense: no
   bidir: yes
   out_fig: output/moved/
+  ins_opt: no # !!NOTE!! This will lauch instance optimization during eval, which can be slow (and needs GPU).
+  ins_opt_args:
+    ins_opt_loss: mse
+    ins_opt_lr: 0.001
+    ins_opt_epochs: 10
 
 model:
   name: VxmAffineFeatureDetector

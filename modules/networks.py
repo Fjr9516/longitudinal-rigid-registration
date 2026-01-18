@@ -4,6 +4,7 @@ import tensorflow as tf
 import tensorflow.keras.layers as KL
 from voxelmorph import layers, utils
 import neurite as ne
+import voxelmorph as vxm
 
 # Adapted from voxelmorph.networks.VxmAffineFeatureDetector,
 # Support unequal number of features for encoder and decoder (e.g., truncatedunet).
@@ -238,3 +239,65 @@ class VxmAffineFeatureDetector(tf.keras.Model):
             out = out[::2]
 
         super().__init__(inputs=input_model.inputs, outputs=out if len(out) > 1 else out[0])
+
+
+# ==============================================
+#         Instance-specific optimization
+# ==============================================
+class AffineInstanceDense(ne.modelio.LoadableModel):
+    """
+    SynthMorph network to perform instance-specific optimization.
+    """
+
+    @ne.modelio.store_config_args
+    def __init__(self,
+                 inshape,
+                 aff_shape,
+                 nb_feats=1,
+                 mult=1,):
+        """ 
+        Parameters:
+            inshape: Input shape of moving image. e.g. (192, 192, 192)
+            aff_shape: Affine matrix shape. e.g. (3, 4)
+            nb_feats: Number of source image features. Default is 1.
+            mult: Bias multiplier for local parameter layer. Default is 1.
+        """
+
+        source = tf.keras.Input(shape=(*inshape, nb_feats), name='source_input')
+        aff_layer = ne.layers.LocalParamWithInput(shape=aff_shape, mult=mult)
+        aff_1 = aff_layer(source)
+        
+        # warp image with aff matrix
+        prop = dict(fill_value=0, shift_center=False, name='transformer')
+        mov_1 = vxm.layers.SpatialTransformer(**prop)((source, aff_1))
+        
+        # initialize the keras model
+        super().__init__(name='vxm_aff_instance_dense',
+                         inputs=[source],
+                         outputs=[mov_1, aff_1])
+
+        # cache pointers to important layers and tensors for future reference
+        self.references = ne.modelio.LoadableModel.ReferenceContainer()
+        self.references.aff_1 = aff_1
+        self.references.aff_layer = aff_layer
+        self.references.mult = mult
+
+    def set_flow(self, warp):
+        '''
+        Sets the networks affine matrix weights. Scales the warp to
+        accommodate the local weight multiplier.
+        '''
+        warp = warp / self.references.mult
+        self.references.aff_layer.set_weights(warp)
+
+    def get_registration_model(self):
+        """
+        Returns a reconfigured model to predict only the final transform.
+        """
+        return tf.keras.Model(self.inputs, self.references.aff_1)
+
+    def register(self, src):
+        """
+        Predicts the transform from src to trg tensors.
+        """
+        return self.get_registration_model().predict(src)

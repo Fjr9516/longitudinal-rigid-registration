@@ -1,6 +1,8 @@
 # LongR²: Longitudinal Rigid Registration for Brain MRI
 
-![Pipeline](./figs/pipeline.png)
+![Representative within-subject registration pairs](./figs/example.png)
+
+Representative within-subject registration pairs. Each row shows a fixed image overlaid with the image moved by each method; we additionally overlay the absolute difference between fixed and moved brain masks in yellow. BrainMorph (BM) and SynthMorph (SM) use deep learning.
 
 This repository contains the source code for the research paper "*Learning Accurate Rigid Registration for Longitudinal Brain MRI from Synthetic Data*". You can find the paper [here](https://ieeexplore.ieee.org/document/10980859). ([arXiv](https://arxiv.org/abs/2501.13010), [PMC](https://pmc.ncbi.nlm.nih.gov/articles/PMC12237398/))
 
@@ -100,7 +102,5 @@ If you use LongR² in your work, please cite the following paper:
 This repository builds upon ideas and tools from [SynthMorph](https://martinos.org/malte/synthmorph/). 
 
 ## TODO
-- Add instance-specific optimization
-- Add a figure
 - Upload weights, containers and maybe example data, csv file.
 
