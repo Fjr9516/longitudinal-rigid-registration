@@ -26,7 +26,7 @@ eval:
   labels: data/fs_cort_sub_left_right_cerebellum.pickle
   run_name: rigid_reg
   weights: models/{run_name}/130000.h5
-  make_dense: yes
+  make_dense: no
   bidir: yes
   out_fig: output/moved/
 
