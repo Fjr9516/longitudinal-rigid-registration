@@ -1,8 +1,10 @@
 # LongR²: Longitudinal Rigid Registration for Brain MRI
 
-![Representative within-subject registration pairs](./assets/example.png)
+<p align="center">
+  <img src="./assets/example.png" alt="Representative within-subject registration pairs" />
+</p>
 
-Representative within-subject registration pairs. Each row shows a fixed image overlaid with the image moved by each method; we additionally overlay the absolute difference between fixed and moved brain masks in yellow. BrainMorph (BM) and SynthMorph (SM) use deep learning.
+<p align="center"><em>Representative within-subject registration pairs. Each row shows a fixed image overlaid with the image moved by each method; we additionally overlay the absolute difference between fixed and moved brain masks in yellow. BrainMorph (BM) and SynthMorph (SM) use deep learning.</em></p>
 
 This repository contains the source code for the research paper "*Learning Accurate Rigid Registration for Longitudinal Brain MRI from Synthetic Data*". You can find the paper [here](https://ieeexplore.ieee.org/document/10980859). ([arXiv](https://arxiv.org/abs/2501.13010), [PMC](https://pmc.ncbi.nlm.nih.gov/articles/PMC12237398/))
 
@@ -23,40 +25,96 @@ The model is trained in an [anatomy-aware and acquisition-agnostic](https://arxi
 ---
 
 ## Instructions
-### Training Instructions
 
-1. **Environment Setup**
-   - Ensure Apptainer (or Singularity) is installed for containerized training.
-   - Prepare your configuration file (e.g., `configs/config.yaml`) and training data as described in the paper and repository.
-  - If you want to follow the containerized instructions exactly, download the Singularity/Apptainer image `tensorflow_2.14.0-gpu.sif` from the release assets and place it at `/containers/tensorflow_2.14.0-gpu.sif`. Otherwise, set up your own environment and Python packages as you prefer.
+### Getting Started
 
-2. **Run Training**
-   - Navigate to the main repository directory:
+This project can be run either (A) containerized with Apptainer/Singularity (recommended for reproducibility) or (B) in a local Python environment. Pick one of the two flows below.
 
-     ```bash
-     cd /path/to/longitudinal-rigid-registration
-     ```
+Prerequisite: clone the repository including submodules:
 
-   - Start training using Apptainer and Python:
+```bash
+# Recommended (single-step, HTTPS)
+git clone --recurse-submodules https://github.com/Fjr9516/longitudinal-rigid-registration.git
+cd longitudinal-rigid-registration
 
-     ```bash
-     ./setup/run_in_apptainer.sh python -m modules.train
-     ```
-     This command launches the containerized environment and runs the training script with your configuration YAML file (`configs/config.yaml`).
+# If already cloned:
+git submodule update --init --recursive
 
-3. **Monitor Training**
-   - Training logs are saved in the `logs/` directory.
-   - Model checkpoints are saved in `models/rigid_reg` by default.
-   - Adjust configuration parameters in your YAML file as needed for your experiments.
+# To update submodules to their tracked remote branches:
+git submodule update --init --recursive --remote
+```
 
-**Troubleshooting:**
-Ensure all required data paths and configuration options are correctly set in your config file. For custom experiments, modify the config and rerun the training command.
+A) Container (Apptainer / Singularity) — recommended
+
+- Install `apptainer` or `singularity` on your system (see https://apptainer.org).
+- Create a `containers/` directory and build or download the SIF image used for experiments:
+
+```bash
+mkdir -p containers
+apptainer build containers/tensorflow_2.14.0-gpu.sif docker://tensorflow/tensorflow:2.14.0-gpu
+```
+
+- The repository includes a helper script `./setup/run_in_apptainer.sh` that wraps running commands inside the SIF. Example usage:
+
+```bash
+# Run training inside the container
+./setup/run_in_apptainer.sh python -m modules.train
+
+# Run evaluation inside the container
+./setup/run_in_apptainer.sh python -m modules.eval
+```
+
+- If your SIF file is stored at a different path, either move it into `containers/` with the name above, or edit `./setup/run_in_apptainer.sh` to point to your file.
+
+B) Local Python environment
+
+- Create and activate a conda environment (example):
+
+```bash
+conda create -n longr2 python=3.11 -y
+conda activate longr2
+```
+
+- Install Python dependencies from a development requirements file:
+
+```bash
+pip install -r requirements.txt
+```
+
+- Run the same entry points locally instead of using the container:
+
+```bash
+python -m modules.train
+python -m modules.eval
+```
+
+### Training (overview)
+
+All training and evaluation behavior is controlled by a YAML configuration file. See and edit [configs/config.yaml](configs/config.yaml) — it contains examples for `train`, `eval`, `model`, and `synthesis` settings used by the entry points.
+
+Pretrained weights and example evaluation CSVs are available from the project [release](https://github.com/Fjr9516/longitudinal-rigid-registration/releases/tag/v1.0.0). Place downloaded weights (e.g. `.h5`) under `models/rigid_reg/` and example CSVs under `data/eval/` (or update paths in your config).
+
+Quick training checklist:
+
+- Edit `configs/config.yaml` and set the `train` section (dataset paths, epochs, learning rate, etc.).
+- Ensure required data files referenced in the config are present (e.g., `train.data` in the config).
+- Run training (containerized recommended):
+
+```bash
+./setup/run_in_apptainer.sh python -m modules.train
+```
+
+By default the training will read `configs/config.yaml`; edit that file or replace it with your own configuration file before launching training.
+
+Monitoring and outputs:
+
+- Training logs are written to `logs/`.
+- Model checkpoints are saved under `models/rigid_reg` (see `train.save_name` in the config).
 
 ### Reference / Evaluation
 
 1. **Prepare config**
     - Edit `configs/config.yaml` and set the `eval` section fields: `data` (CSV(s)), `weights` (path template), `run_name`, `labels` (LUT), `save_name`, and optional `out_fig` to save moved images and transform lta files.
-  - Pretrained model weights and example evaluation CSV files are available from the project [release](https://github.com/Fjr9516/longitudinal-rigid-registration/releases/tag/v1.0.0). Download the pretrained `.h5` into `models/rigid_reg/` and example CSVs into `data/eval/` (or update your config paths accordingly).
 
 2. **Run evaluation**
     - From the repository root run (containerized):
@@ -64,11 +122,10 @@ Ensure all required data paths and configuration options are correctly set in yo
       ```bash
       ./setup/run_in_apptainer.sh python -m modules.eval
       ```
-  If you followed the containerized setup exactly, ensure the SIF is placed at `/containers/tensorflow_2.14.0-gpu.sif` before running the above command.
 
 3. **Outputs**
-    - Results CSV is written as `save_name`.
-    - If `out_fig` is set, moved images and transform lta files are saved in that directory.
+    - Results CSV is written as `eval.save_name` in the config.
+    - If `eval.out_fig` is set, moved images and transform lta files are saved in that directory.
 
   **Freesurfer users:** you can apply a saved `.lta` transform to a moving volume with `mri_convert`. Example:
 
@@ -86,7 +143,7 @@ Ensure all required data paths and configuration options are correctly set in yo
 
 ## Citation
 If you use LongR² in your work, please cite the following paper:
-```
+```bibtex
 @inproceedings{fu2025longitudinalrigid,
   author    = {Fu, Jingru and Dalca, Adrian V. and Fischl, Bruce and Moreno, Rodrigo and Hoffmann, Malte},
   title     = {Learning Accurate Rigid Registration for Longitudinal Brain MRI from Synthetic Data},
