@@ -53,7 +53,7 @@ This project can be run either (A) containerized with Apptainer/Singularity (rec
     apptainer build containers/tensorflow_2.14.0-gpu.sif docker://tensorflow/tensorflow:2.14.0-gpu
     ```
 
-  - The repository includes a helper script `./setup/run_in_apptainer.sh` that wraps running commands inside the SIF. Example usage:
+  - The repository includes a helper script [`./setup/run_in_apptainer.sh`](/setup/run_in_apptainer.sh) that wraps running commands inside the SIF. Example usage:
 
     ```bash
     # Run training inside the container
@@ -63,7 +63,7 @@ This project can be run either (A) containerized with Apptainer/Singularity (rec
     ./setup/run_in_apptainer.sh python -m modules.eval
     ```
 
-  - If your SIF file is stored at a different path, either move it into `containers/` with the name above, or edit `./setup/run_in_apptainer.sh` to point to your file.
+  - If your SIF file is stored at a different path, either move it into `containers/` with the name above, or edit [`./setup/run_in_apptainer.sh`](/setup/run_in_apptainer.sh) to point to your file.
 
 **B) Local Python environment**
   - Create and activate a conda environment (example):
@@ -94,7 +94,6 @@ Pretrained weights and example evaluation CSVs are available from the project [r
 
 1. **Quick training checklist**
     - Edit `configs/config.yaml` and set the `train` section (dataset paths, epochs, learning rate, etc.).
-    - Ensure required data files referenced in the config are present (e.g., `train.data` in the config).
     - Run training (containerized recommended):
 
     ```bash
@@ -105,12 +104,12 @@ Pretrained weights and example evaluation CSVs are available from the project [r
 
 2. **Monitoring and outputs**
     - Training logs are written to `logs/`.
-    - Model checkpoints are saved under `models/rigid_reg` (see `train.save_name` in the config).
+    - Model checkpoints are saved to `models/<save_name>`. By default, the `train.save_name` field in the configuration determines this folder name.
 
 ### Reference / Evaluation
 
 1. **Prepare config**
-    - Edit `configs/config.yaml` and set the `eval` section fields: `data` (CSV(s)), `weights` (path template), `run_name`, `labels` (LUT), `save_name`, and optional `out_fig` to save moved images and transform lta files.
+  - Edit `configs/config.yaml` and set the `eval` section: `data` (CSV(s) containing evaluation pairs), `weights` (path to weights file), `run_name` (experiment identifier), `labels` (label lookup table for Dice computation), `save_name` (output path and name for the results CSV), and optionally `out_fig` (directory to save moved images and `.lta` transform files).
 
 2. **Run evaluation**
     - From the repository root run (containerized):
@@ -135,7 +134,7 @@ Pretrained weights and example evaluation CSVs are available from the project [r
     Use `-rt nearest` when saving label maps (to preserve integer labels).
 
 4. **Benchmark**
-    - Performance note: on a Quadro RTX 6000, with input volumes of size 256×256×256, a single registration takes approximately ~2 seconds (measured end-to-end for model inference and resampling).
+    - Performance note: on a Quadro RTX 6000, with input volumes of size 256×256×256, a single rigid registration takes approximately ~2 seconds (measured end-to-end for model inference and resampling).
 
 ## Citation
 If you use LongR² in your work, please cite the following paper:
