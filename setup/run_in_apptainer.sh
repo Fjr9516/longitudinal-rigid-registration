@@ -13,6 +13,12 @@ if [[ ! -f "$image" ]]; then
   exit 1
 fi
 
+# === Python-based installs ===
+IMAGE_BASENAME="$(basename "$image" .sif)"
+pip_env="${REPO_ROOT}/ext/pip/${IMAGE_BASENAME}"
+export APPTAINERENV_PYTHONUSERBASE="$pip_env"
+export APPTAINERENV_PREPEND_PATH="$pip_env/bin:${APPTAINERENV_PREPEND_PATH:-}"
+
 # === Add code repos to PYTHONPATH (prefer repo/src if it exists) ===
 git_dir="${REPO_ROOT}/ext" # <=== Adjust as needed
 git_rep=(

@@ -58,6 +58,7 @@ data/*
 tmp_dir/
 containers/
 containers/*
+ext/pip/*
 
 # Large or binary model/weights files
 *.h5

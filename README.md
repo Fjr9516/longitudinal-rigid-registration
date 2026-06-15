@@ -53,6 +53,12 @@ This project can be run either (A) containerized with Apptainer/Singularity (rec
     apptainer build containers/tensorflow_2.14.0-gpu.sif docker://tensorflow/tensorflow:2.14.0-gpu
     ```
 
+  - Install the Python dependencies:
+
+    ```bash
+    ./setup/install_requirements.sh
+    ```
+
   - The repository includes a helper script [`./setup/run_in_apptainer.sh`](/setup/run_in_apptainer.sh) that wraps running commands inside the SIF. Example usage:
 
     ```bash
